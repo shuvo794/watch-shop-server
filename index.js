@@ -24,6 +24,7 @@ async function run() {
     const servicessCollection = database.collection("services");
     const orderCollection = database.collection("orders");
     const reviewCollection = database.collection("reviews");
+    const userCollection = database.collection("users");
 
     // Get api
     app.get("/services", async (req, res) => {
@@ -100,6 +101,41 @@ res.send(result)
 
 })
 
+app.post("/addUserInfo", async (req, res)=>{
+const result = await userCollection.insertOne(req.body)
+res.send(result)
+console.log(result)
+})
+
+app.put("/makeAdmin",async (req, res)=>{
+  //   const filter = { email: req.body.email };
+  //   const result = await userCollection.find(filter).toArray();
+  //  console.log(result)
+    console.log(req.body);
+    const filter = { email: req.body.email };
+      const result = await userCollection.find(filter).toArray();
+      // console.log(result);
+  
+      if (result) {
+        const documents = await userCollection.updateOne(filter, {
+          $set: { role: "admin" },
+        });
+        console.log(documents);
+      }
+
+  });
+
+  // check admin or not
+  app.get("/checkAdmin/:email", async (req, res) => {
+    const result = await userCollection
+      .find({ email: req.params.email })
+      .toArray();
+    console.log(result);
+    res.send(result);
+  });
+
+
+
   } finally {
     // await client.close()
   }
@@ -110,6 +146,7 @@ run().catch(console.dir);
 app.get("/", (req, res) => {
   res.send("Ranning Watch Server");
 });
+
 
 app.listen(port, () => {
   console.log("Rannig server is port", port);
