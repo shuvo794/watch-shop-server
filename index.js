@@ -25,7 +25,7 @@ async function run() {
     const orderCollection = database.collection("orders");
     const reviewCollection = database.collection("reviews");
     const userCollection = database.collection("users");
-
+    const expolerCollection=database.collection("expoler");
     // Get api
     app.get("/services", async (req, res) => {
       const cursore = servicessCollection.find({});
@@ -85,8 +85,8 @@ res.send(orders);
     });
 
     app.get("/addSReview", async (req, res) => {
-      const cursore = reviewCollection.find({});
-      const review = await cursore.toArray();
+      const cursor = reviewCollection.find({});
+      const review = await cursor.toArray();
       res.send(review);
           });
     app.get("/addSReview/:id", async (req, res) => {
@@ -133,6 +133,36 @@ app.put("/makeAdmin",async (req, res)=>{
     console.log(result);
     res.send(result);
   });
+
+ /// all order
+ app.get("/allOrders", async (req, res) => {
+  // console.log("hello");
+  const result = await orderCollection.find({}).toArray();
+  res.send(result);
+});
+
+// status update
+app.put("/statusUpdate/:id", async (req, res) => {
+  const filter = { _id: ObjectId(req.params.id) };
+  console.log(req.params.id);
+  const result = await orderCollection.updateOne(filter, {
+    $set: {
+      status: req.body.status,
+    },
+  });
+  res.send(result);
+  console.log(result);
+});
+
+// Expoler
+app.get("/expoler",async (req, res)=>{
+const cursor=expolerCollection.find({});
+const expoler=await cursor.toArray();
+res.send(expoler);
+})
+
+
+
 
 
 
